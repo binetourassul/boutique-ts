@@ -1,4 +1,7 @@
 import "./style.css";
+import type { Produit } from "./types";
+import { catalogue } from "./catalogue";
+import { formatPrix } from "./outils";
 console.log("La boutique demarre");
 function trouver<T extends HTMLElement>(selecteur: string): T {
  const element = document.querySelector<T>(selecteur);
@@ -7,9 +10,40 @@ function trouver<T extends HTMLElement>(selecteur: string): T {
  }
  return element;
 }
-const ZoneCatalogue = trouver<HTMLDivElement>("#catalogue");
-const ListPanier = trouver<HTMLUListElement>("#lignes-panier");
-const zoneTotal = trouver<HTMLElement>("#total");
-const compteur = trouver<HTMLSpanElement>("#compteur");
-const champRecherche = trouver<HTMLInputElement>("#recherche");
-const filtreCategorie = trouver<HTMLSelectElement>("#filtre-categorie");
+const zoneCatalogue = trouver<HTMLDivElement>("#catalogue");
+// const ListPanier = trouver<HTMLUListElement>("#lignes-panier");
+// const zoneTotal = trouver<HTMLElement>("#total");
+// const compteur = trouver<HTMLSpanElement>("#compteur");
+// const champRecherche = trouver<HTMLInputElement>("#recherche");
+// const filtreCategorie = trouver<HTMLSelectElement>("#filtre-categorie");
+
+function creerCarte(produit: Produit): HTMLElement {
+  const article = document.createElement("article");
+  article.className = "carte";
+
+  const titre = document.createElement("h3");
+  titre.textContent = produit.nom;
+
+  const prix = document.createElement("p");
+  prix.className = "prix";
+  prix.textContent = formatPrix(produit.prix);
+
+  const bouton = document.createElement("button");
+  bouton.type = "button";
+
+  if (produit.stock === 0) {
+    bouton.textContent = "Épuisé";
+    bouton.disabled = true;
+  } else {
+    bouton.textContent = "Ajouter au panier";
+  }
+
+  article.append(titre, prix, bouton);
+  return article;
+}
+
+function afficherCatalogue(): void {
+  zoneCatalogue.replaceChildren(...catalogue.map(creerCarte));
+}
+
+afficherCatalogue();
